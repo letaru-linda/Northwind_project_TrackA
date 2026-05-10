@@ -1,8 +1,8 @@
 -- CREATING DATABASE
-create database Northwind;
+CREATE database Northwind;
 -- To use the datebase created
-use Northwind;
+USE Northwind;
 -- To confirm the tables Loaded in MYSQL Workbench
-show tables;
+SHOW tables;
  SELECT COUNT(*) FROM orders;
  SELECT COUNT(*) FROM products; 
