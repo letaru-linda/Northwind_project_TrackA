@@ -3,7 +3,12 @@
 CREATE database Northwind;
 -- To use the datebase created
 USE Northwind;
--- To confirm the tables Loaded in MYSQL Workbench
+--  Q1. How many total orders are in the database? 
 SHOW tables;
  SELECT COUNT(*) FROM orders;
- SELECT COUNT(*) FROM products; 
+-- Q2. List all product names and their unit prices, sorted from most expensive to least.
+SELECT * FROM products;
+SELECT list_price,product_name
+ FROM productS
+ ORDER BY list_price DESC;
+
