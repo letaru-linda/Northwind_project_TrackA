@@ -1,3 +1,4 @@
+-- TIER 1 — Foundational Queries  (Q1–12) 
 -- CREATING DATABASE
 CREATE database Northwind;
 -- To use the datebase created
