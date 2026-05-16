@@ -48,4 +48,9 @@ limit 10;
 SELECT * FROM employees;
  SELECT  concat(first_name,"  ",last_name) as full_name,job_title
 FROM employees
+--  Q9. How many orders were placed each year? Show year and order count. 
+year(order_date) AS order_year,
+	  count(id) AS order_count
+ from orders
+group by order_year
 
