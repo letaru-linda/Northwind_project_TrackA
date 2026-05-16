@@ -11,4 +11,10 @@ SELECT * FROM products;
 SELECT list_price,product_name
  FROM productS
  ORDER BY list_price DESC;
+-- Q3. How many products belong to each category? Show category name and product count.
+SELECT category,
+COUNT(id) AS product_count
+FROM products
+GROUP BY category
+ORDER BY product_count DESC
 
