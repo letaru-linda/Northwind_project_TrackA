@@ -38,4 +38,10 @@ ON o.customer_id = c.id
  group by c.company
 order by order_count desc
 LIMIT 5;
+-- Q7. What is the average unit price of products in each category?
+SELECT category,
+avg(list_price) As product_avg
+from products
+group by category
+limit 10;
 
