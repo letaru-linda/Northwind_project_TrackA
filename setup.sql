@@ -44,4 +44,8 @@ avg(list_price) As product_avg
 from products
 group by category
 limit 10;
+-- Q8. List all employees with their full name, title, and the year they were hired.
+SELECT * FROM employees;
+ SELECT  concat(first_name,"  ",last_name) as full_name,job_title
+FROM employees
 
