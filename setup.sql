@@ -17,4 +17,8 @@ COUNT(id) AS product_count
 FROM products
 GROUP BY category
 ORDER BY product_count DESC
+-- Q4. Which countries do Northwind's customers come from? List each country once.
+SELECT DISTINCT  country_region
+FROM customers;
+
 
