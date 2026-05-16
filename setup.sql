@@ -20,5 +20,12 @@ ORDER BY product_count DESC
 -- Q4. Which countries do Northwind's customers come from? List each country once.
 SELECT DISTINCT  country_region
 FROM customers;
+-- Q5. What is the total quantity of each product ordered across all orders? Show product
+SELECT 
+  p.product_name, 
+ SUM(od.quantity) AS total_quantity
+FROM products p
+JOIN order_details od ON p.id = od.product_id
+GROUP BY p.product_name;
 
 
