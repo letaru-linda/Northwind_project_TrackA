@@ -27,5 +27,15 @@ SELECT
 FROM products p
 JOIN order_details od ON p.id = od.product_id
 GROUP BY p.product_name;
-
+-- Q6. Which 5 customers have placed the most orders? Show company name and ordercount. 
+SELECT * FROM customers;
+ SELECT
+ c.company,
+count(o.id) AS order_count
+from orders o
+join customers c
+ON o.customer_id = c.id
+ group by c.company
+order by order_count desc
+LIMIT 5;
 
