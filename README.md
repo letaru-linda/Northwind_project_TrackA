@@ -1,5 +1,4 @@
 # Northwind SQL Business Intelligence Project
-
 ## Project Overview
 
 This project contains a comprehensive SQL analysis performed on the Northwind dataset. The goal of the project was to transform raw transactional data into actionable business insights using SQL.
