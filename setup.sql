@@ -206,5 +206,16 @@ GROUP BY
 ORDER BY 
     avg_days_to_ship ASC;
     LIMIT 1;
+  -- Q22. List all products supplied by companies in Germany. 
+  SELECT 
+    p.product_name, 
+    s.company AS supplier_name,
+    s.country_region
+FROM 
+    products p
+JOIN 
+    suppliers s ON p.supplier_ids = s.id
+WHERE 
+    s.country_region = 'Germany';
 
 
