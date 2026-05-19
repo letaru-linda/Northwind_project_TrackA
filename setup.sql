@@ -661,4 +661,29 @@ COUNT(o2.id) AS orders_in_7_days
  HAVING COUNT(o2.id) >= 3
  ORDER BY 
  orders_in_7_days DESC;
-    
+--   Q41. Produce a supplier performance scorecard: for each supplier show total products 
+-- supplied, total quantity ordered, total revenue generated, and average days from order to 
+-- shipment. 
+SELECT 
+s.company AS supplier_name,
+COUNT(DISTINCT p.id) AS total_products_supplied,
+SUM(od.quantity) AS total_quantity_ordered,
+ROUND(
+SUM(od.unit_price * od.quantity * (1 - od.discount)),
+ 2  ) AS total_revenue_generated,
+ROUND(
+AVG(DATEDIFF(o.shipped_date, o.order_date)),
+  2
+ ) AS avg_days_to_ship
+
+FROM suppliers 
+JOIN products p
+ ON s.id = p.supplier_ids
+ JOIN order_details od
+ ON p.id = od.product_id
+ JOIN orders o
+ ON od.order_id = o.id
+ GROUP BY 
+ s.id,
+ s.company
+ ORDER BY total_revenue_generated DESC;
