@@ -280,3 +280,21 @@ GROUP BY
     c.id, c.company
 ORDER BY 
     total_discount_amount DESC;
+-- Q28. Identify orders where the total value exceeds $5,000. List order details and customer
+SELECT 
+    o.id AS order_id, 
+    o.order_date, 
+    c.company AS customer_name,
+    SUM(od.quantity * od.unit_price * (1 - od.discount)) AS total_order_value
+FROM 
+    orders o
+JOIN 
+    customers c ON o.customer_id = c.id
+JOIN 
+    order_details od ON o.id = od.order_id
+GROUP BY 
+    o.id, o.order_date, c.company
+HAVING 
+    total_order_value > 5000
+ORDER BY 
+    total_order_value DESC;
