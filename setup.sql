@@ -126,5 +126,20 @@ HAVING
     order_count > 80
 ORDER BY 
     order_count DESC;
+--Q16. Find all orders that were shipped AFTER the required date — i.e., they were delivered 
+-- late
+SELECT 
+    o.id AS order_id, 
+    o.order_date, 
+    o.shipped_date, 
+    i.due_date AS required_date
+FROM 
+    orders o
+JOIN 
+    invoices i ON o.id = i.order_id
+WHERE 
+    o.shipped_date > i.due_date
+ORDER BY 
+    o.shipped_date DESC;
 
 
