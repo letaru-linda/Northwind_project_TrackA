@@ -539,3 +539,41 @@ JOIN order_details od   ON o.id = od.order_id
 WHERE o.customer_id = p_customer_id
 GROUP BY o.customer_id; END $$
 DELIMITER ;
+
+-- Q37. Find the top 3 best-selling products per country (based on customer country). This requires a window function and a join chain
+ WITH product_sales AS (
+ SELECT 
+  c.country_region,
+ p.product_name,
+SUM(od.quantity) AS total_quantity_sold
+FROM customers c
+ JOIN orders o
+ ON c.id = o.customer_id
+JOIN order_details od
+ON o.id = od.order_id
+JOIN products p
+ ON od.product_id = p.id
+GROUP BY 
+c.country_region,
+p.product_name
+ ),
+ranked_products AS (
+SELECT 
+ country_region,
+ product_name,
+ total_quantity_sold,
+ RANK() OVER (
+ PARTITION BY country_region
+ORDER BY total_quantity_sold DESC
+ ) AS product_rank
+FROM product_sales )
+SELECT 
+country_region,
+product_name,
+total_quantity_sold,
+product_rank
+FROM ranked_products
+WHERE product_rank <= 3
+ORDER BY 
+ country_region,
+ product_rank;
