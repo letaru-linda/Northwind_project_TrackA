@@ -249,5 +249,9 @@ GROUP BY
 ORDER BY 
     order_year, 
     order_quarter;
+  -- Q25. Which customers placed orders in 1996 but NOT in 1997? Use a set-based approach.
 
+SELECT customer_id FROM orders WHERE YEAR(order_date) = 1996
+EXCEPT
+SELECT customer_id FROM orders WHERE YEAR(order_date) = 1997;
 
