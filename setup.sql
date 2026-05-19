@@ -61,5 +61,13 @@ FROM  order_details od
 JOIN products p
  ON od.product_id = p.id
 group by  p.category
-
+-- Q11. Which shipper has handled the most orders? 
+SELECT * FROM shippers
+SELECT s.company,
+count(o.id) AS order_count
+FROM orders o
+JOIN shippers s
+ON o.shipper_id = s.id
+GROUP BY s.company
+ORDER BY order_count DESC;
 
