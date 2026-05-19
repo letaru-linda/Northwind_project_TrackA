@@ -421,3 +421,33 @@ GROUP BY spending_tier
 ORDER BY customer_count DESC;
 
 -- (“The CASE statement categorizes customers into spending tiers based on their total revenue contribution) 
+-- Q33. Calculate each employee's share of total company revenue as a percentage. Which employee is responsible for the highest share?
+SELECT 
+    CONCAT(e.first_name, ' ', e.last_name) AS employee_name,
+    ROUND(SUM(od.unit_price * od.quantity * (1 - od.discount)),2) AS employee_revenue,
+    ROUND(
+        (
+            SUM(od.unit_price * od.quantity * (1 - od.discount))
+            /
+            (
+                SELECT 
+                    SUM(unit_price * quantity * (1 - discount))
+                FROM order_details
+            )
+        ) * 100,
+        2
+    ) AS revenue_share_percentage
+FROM employees e
+JOIN orders o
+    ON e.id = o.employee_id
+JOIN order_details od
+    ON o.id = od.order_id
+GROUP BY 
+    e.id,
+    e.first_name,
+    e.last_name
+ORDER BY revenue_share_percentage DESC;
+
+-- (“I calculated each employee’s revenue using aggregation, 
+-- then divided it by total company revenue from a subquery and multiplied 
+-- by 100 to obtain percentage contribution.”)
