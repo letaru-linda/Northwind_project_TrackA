@@ -363,3 +363,34 @@ SELECT
 FROM ranked_products
 WHERE revenue_rank <= 3
 ORDER BY category, revenue_rank;
+-- Q31. Build a customer RFM (Recency, Frequency, Monetary) analysis: for each customer 
+-- calculate (1) days since last order,(2)total number of orders,(3)total revenue.show all the three matrics per customer
+-- (Recency: How recently a customer bought
+-- Frequency: How often they buy
+-- Monetary :How much money they spent)
+ WITH customer_revenue AS (
+    SELECT 
+        o.customer_id,
+        MAX(o.order_date) AS last_order_date,
+        COUNT(o.id) AS frequency,
+        SUM(od.unit_price * od.quantity * (1 - od.discount)) AS monetary
+    FROM orders o
+    JOIN order_details od
+        ON o.id = od.order_id
+    GROUP BY o.customer_id
+)
+SELECT 
+    customer_id,
+    1. Recency (days since last order)
+    DATEDIFF(CURRENT_DATE, last_order_date) AS recency_days,
+    2. Frequency
+    frequency,
+    3. Monetary value
+    ROUND(monetary, 2) AS total_revenue
+
+FROM customer_revenue
+ORDER BY monetary DESC;
+
+-- (“I aggregate customer-level data using a CTE to calculate frequency, monetary value, 
+-- and last purchase date. Then I compute recency using DATEDIFF between current date and last order date,
+--  producing a complete RFM profile per customer.”)
