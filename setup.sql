@@ -363,7 +363,7 @@ SELECT
 FROM ranked_products
 WHERE revenue_rank <= 3
 ORDER BY category, revenue_rank;
--- Q31. Build a customer RFM (Recency, Frequency, Monetary) analysis: for each customer 
+-- Build a customer RFM (Recency, Frequency, Monetary) analysis: for each customer 
 -- calculate (1) days since last order,(2)total number of orders,(3)total revenue.show all the three matrics per customer
 -- (Recency: How recently a customer bought
 -- Frequency: How often they buy
