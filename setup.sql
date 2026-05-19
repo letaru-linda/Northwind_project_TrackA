@@ -451,3 +451,5 @@ ORDER BY revenue_share_percentage DESC;
 -- (“I calculated each employee’s revenue using aggregation, 
 -- then divided it by total company revenue from a subquery and multiplied 
 -- by 100 to obtain percentage contribution.”)
+-- Q34. Using a window function, calculate the running total of orders placed each month 
+-- across the full dataset. 
