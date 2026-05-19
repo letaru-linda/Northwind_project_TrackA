@@ -83,7 +83,7 @@ COUNT(*) AS discontinued_count
 FROM products
 WHERE discontinued = 0;
 -- TIER 2 — Intermediate Queries  (Q13–28)
--- Q13. Calculate the total revenue for each customer. Show company name and total.
+-- Q13. Calculate the total revenue for each customer. Show company name and total revenue,sorted highest first.
 SELECT 
     c.company,
     SUM(od.quantity * od.unit_price * (1 - od.discount)) AS total_revenue
