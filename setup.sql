@@ -180,6 +180,15 @@ GROUP BY
 ORDER BY 
     total_value DESC
 LIMIT 10;
-
+-- Q20. Which customers have NEVER placed an order? (This reveals at-risk or churned 
+SELECT 
+    c.id, 
+    c.company
+FROM 
+    customers c
+LEFT JOIN 
+    orders o ON c.id = o.customer_id
+WHERE 
+    o.id IS NULL;
 
 
