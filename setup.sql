@@ -265,3 +265,18 @@ LEFT JOIN
     employees m ON e.reports_to = m.id
 ORDER BY 
     manager_name;
+--Q27. Calculate total discount given per customer in dollar terms (discount × unit_price × 
+-- quantity). Who received the most discount? 
+SELECT 
+    c.company AS customer_name,
+    SUM(od.unit_price * od.quantity * od.discount) AS total_discount_amount
+FROM 
+    customers c
+JOIN 
+    orders o ON c.id = o.customer_id
+JOIN 
+    order_details od ON o.id = od.order_id
+GROUP BY 
+    c.id, c.company
+ORDER BY 
+    total_discount_amount DESC;
