@@ -235,5 +235,19 @@ INNER JOIN (
 ) p2 ON p1.category = p2.category AND p1.list_price = p2.max_price
 ORDER BY 
     p1.category;
+--Q24. How many orders were placed per quarter each year? Show year, quarter, and order 
+-- count.
+SELECT 
+    YEAR(order_date) AS order_year, 
+    QUARTER(order_date) AS order_quarter, 
+    COUNT(id) AS order_count
+FROM 
+    orders
+GROUP BY 
+    order_year, 
+    order_quarter
+ORDER BY 
+    order_year, 
+    order_quarter;
 
 
