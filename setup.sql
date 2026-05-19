@@ -163,5 +163,23 @@ WHERE
     list_price > (SELECT AVG(list_price) FROM products)
 ORDER BY 
     list_price DESC;
+    -- Q19. For each order, calculate the total order value (sum of all line items). Show order_id,customer,orderdate,and total revenue .List the top 10 highest-value orders.
+    SELECT 
+    o.id AS order_id, 
+    c.company AS customer, 
+    o.order_date, 
+    SUM(od.quantity * od.unit_price * (1 - od.discount)) AS total_value
+FROM 
+    orders o
+JOIN 
+    customers c ON o.customer_id = c.id
+JOIN 
+    order_details od ON o.id = od.order_id
+GROUP BY 
+    o.id, c.company, o.order_date
+ORDER BY 
+    total_value DESC
+LIMIT 10;
+
 
 
