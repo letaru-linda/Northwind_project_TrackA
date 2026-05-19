@@ -453,3 +453,61 @@ ORDER BY revenue_share_percentage DESC;
 -- by 100 to obtain percentage contribution.”)
 -- Q34. Using a window function, calculate the running total of orders placed each month 
 -- across the full dataset. 
+WITH monthly_orders AS (
+ SELECT 
+ YEAR(order_date) AS order_year,
+ MONTH(order_date) AS order_month,
+COUNT(o.id) AS order_count
+FROM orders o
+GROUP BY 
+YEAR(order_date),
+ MONTH(order_date)
+  SELECT 
+order_year,
+order_month,
+order_count,
+SUM(order_count) OVER (
+ORDER BY order_year, order_month
+ ROWS UNBOUNDED PRECEDING
+  ) AS running_total_orders
+FROM monthly_orders
+ORDER BY order_year, order_month;
+-- Q35. Create a VIEW called vw_order_summary that combines order ID, customer name, 
+-- employee name,shipper name,order date,shipped date,days to ship and total order value.
+ CREATE VIEW vw_order_summary AS
+ SELECT 
+ o.id AS order_id,
+ c.company AS customer_name,
+CONCAT(e.first_name, ' ', e.last_name) AS employee_name,
+ s.company AS shipper_name,
+DATE(o.order_date) AS order_date,
+DATE(o.shipped_date) AS shipped_date,
+DATEDIFF(o.shipped_date, o.order_date) AS days_to_ship,
+
+ ROUND(
+ SUM(od.unit_price * od.quantity * (1 - od.discount)),
+  2
+ ) AS total_order_value
+
+FROM orders o
+
+JOIN customers c
+ ON o.customer_id = c.id
+
+JOIN employees e
+ ON o.employee_id = e.id
+
+JOIN shippers s
+ ON o.shipper_id = s.id
+
+JOIN order_details od
+ ON o.id = od.order_id
+
+GROUP BY 
+ o.id,
+c.company,
+e.first_name,
+e.last_name,
+s.company,
+o.order_date,
+o.shipped_date;
