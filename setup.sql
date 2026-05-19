@@ -153,5 +153,15 @@ GROUP BY
     s.id, s.company
 ORDER BY 
     product_count DESC;
+    -- Q18. List all products where the unit price is above the average unit price across all
+    SELECT 
+    product_name, 
+    list_price
+FROM 
+    products
+WHERE 
+    list_price > (SELECT AVG(list_price) FROM products)
+ORDER BY 
+    list_price DESC;
 
 
