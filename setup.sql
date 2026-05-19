@@ -54,4 +54,12 @@ year(order_date) AS order_year,
  from orders
 group by order_year
 -- Qn 10. What is the total revenue generated per product category?
+SELECT * FROM order_details
+SELECT p.category,
+sum(unit_price * quantity * (1 - discount)) As total_revenue
+FROM  order_details od
+JOIN products p
+ ON od.product_id = p.id
+group by  p.category
+
 
