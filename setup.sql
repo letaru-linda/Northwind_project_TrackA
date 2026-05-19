@@ -328,3 +328,38 @@ AS revenue_change
 FROM monthly_revenue
 ORDER BY order_year, order_month;
 (“This query calculates monthly revenue and shows how each month compares to the previous month.”) 
+-- Q30. Use RANK() to rank products by total revenue within each category. Show the top 3 
+--  ( “I first calculated total revenue per product using aggregation,(CTE) 
+-- then applied RANK() partitioned by category to rank products within each category based on revenue,
+--  and finally filtered to keep only the top 3 ranks.”)
+WITH product_revenue AS (
+    SELECT 
+        p.category,
+        p.product_name,
+        SUM(od.unit_price * od.quantity * (1 - od.discount)) AS total_revenue
+    FROM products p
+    JOIN order_details od
+        ON p.id = od.product_id
+    GROUP BY 
+        p.category,
+        p.product_name
+),
+ranked_products AS (
+    SELECT 
+        category,
+        product_name,
+        total_revenue,
+        RANK() OVER (
+            PARTITION BY category
+            ORDER BY total_revenue DESC
+        ) AS revenue_rank
+    FROM product_revenue
+)
+SELECT 
+    category,
+    product_name,
+    total_revenue,
+    revenue_rank
+FROM ranked_products
+WHERE revenue_rank <= 3
+ORDER BY category, revenue_rank;
