@@ -141,5 +141,17 @@ WHERE
     o.shipped_date > i.due_date
 ORDER BY 
     o.shipped_date DESC;
+    -- Q17. Which suppliers provide the most products? Show supplier name and product count. 
+    SELECT 
+    s.company AS supplier_name, 
+    COUNT(p.id) AS product_count
+FROM 
+    suppliers s
+JOIN 
+    products p ON s.id = p.supplier_ids
+GROUP BY 
+    s.id, s.company
+ORDER BY 
+    product_count DESC;
 
 
