@@ -363,7 +363,7 @@ SELECT
 FROM ranked_products
 WHERE revenue_rank <= 3
 ORDER BY category, revenue_rank;
--- Build a customer RFM (Recency, Frequency, Monetary) analysis: for each customer 
+-- Q31 Build a customer RFM (Recency, Frequency, Monetary) analysis: for each customer 
 -- calculate (1) days since last order,(2)total number of orders,(3)total revenue.show all the three matrics per customer
 -- (Recency: How recently a customer bought
 -- Frequency: How often they buy
@@ -394,3 +394,30 @@ ORDER BY monetary DESC;
 -- (“I aggregate customer-level data using a CTE to calculate frequency, monetary value, 
 -- and last purchase date. Then I compute recency using DATEDIFF between current date and last order date,
 --  producing a complete RFM profile per customer.”)
+-- Q32. Use a CASE statement to assign each customer to a spending tier: Platinum 
+-- (>$10,000), Gold ($5,000–$10,000), Silver ($1,000–$5,000), Bronze (<$1,000). Show count of customers per tier.
+WITH customer_revenue AS (
+    SELECT 
+        o.customer_id,
+        SUM(od.unit_price * od.quantity * (1 - od.discount)) AS total_revenue
+    FROM orders o
+    JOIN order_details od
+        ON o.id = od.order_id
+    GROUP BY o.customer_id
+)
+
+SELECT 
+    CASE
+        WHEN total_revenue > 10000 THEN 'Platinum'
+        WHEN total_revenue BETWEEN 5000 AND 10000 THEN 'Gold'
+        WHEN total_revenue BETWEEN 1000 AND 4999.99 THEN 'Silver'
+        ELSE 'Bronze'
+    END AS spending_tier,
+
+    COUNT(*) AS customer_count
+
+FROM customer_revenue
+GROUP BY spending_tier
+ORDER BY customer_count DESC;
+
+-- (“The CASE statement categorizes customers into spending tiers based on their total revenue contribution) 
