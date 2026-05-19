@@ -204,5 +204,7 @@ WHERE
 GROUP BY 
     e.id, e.first_name, e.last_name
 ORDER BY 
-    avg_days_to_ship;
+    avg_days_to_ship ASC;
+    LIMIT 1;
+
 
