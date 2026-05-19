@@ -597,3 +597,47 @@ SELECT DISTINCT od.product_id
  CROSS JOIN latest_date ld
 WHERE o.order_date >= DATE_SUB(ld.max_order_date, INTERVAL 12 MONTH) )
 ORDER BY p.product_name;
+-- Q39. Using a CTE, calculate the quarter-over-quarter revenue growth rate for each year. 
+WITH quarterly_revenue AS (
+
+SELECT 
+YEAR(o.order_date) AS order_year,
+ QUARTER(o.order_date) AS order_quarter,
+ ROUND(
+ SUM(od.unit_price * od.quantity * (1 - od.discount)),
+    2
+  ) AS total_revenue
+
+ FROM orders o
+
+ JOIN order_details od
+ ON o.id = od.order_id
+
+ GROUP BY 
+ YEAR(o.order_date),
+ QUARTER(o.order_date)
+)
+SELECT 
+order_year,
+order_quarter,
+total_revenue,
+LAG(total_revenue, 1) OVER (
+  PARTITION BY order_year
+ ORDER BY order_quarter
+-) AS previous_quarter_revenue,
+ ROUND(
+ (
+ (
+ total_revenue LAG(total_revenue, 1) OVER (
+ PARTITION BY order_year
+ ORDER BY order_quarter
+)) /LAG(total_revenue, 1) OVER (
+ PARTITION BY order_year
+ORDER BY order_quarter
+      )
+ ) * 100, 2
+) AS qoq_growth_rate
+FROM quarterly_revenue
+ ORDER BY 
+ order_year,
+ order_quarter;
