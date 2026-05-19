@@ -254,4 +254,14 @@ ORDER BY
 SELECT customer_id FROM orders WHERE YEAR(order_date) = 1996
 EXCEPT
 SELECT customer_id FROM orders WHERE YEAR(order_date) = 1997;
-
+-- Q26. Show each employee's manager (reports_to). List employee full name and their 
+-- manager's full name.
+SELECT 
+    CONCAT(e.first_name, ' ', e.last_name) AS employee_name,
+    CONCAT(m.first_name, ' ', m.last_name) AS manager_name
+FROM 
+    employees e
+LEFT JOIN 
+    employees m ON e.reports_to = m.id
+ORDER BY 
+    manager_name;
