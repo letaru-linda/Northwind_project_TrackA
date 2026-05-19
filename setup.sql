@@ -298,3 +298,33 @@ HAVING
     total_order_value > 5000
 ORDER BY 
     total_order_value DESC;
+-- TIER 3 — Advanced Queries  (Q29–42)
+-- Q29. Using a CTE, calculate the monthly revenue trend for the entire dataset. Show year,month,total revenue,and month over month change in revenue.
+-- (“I used a CTE to first aggregate monthly revenue, then applied the LAG window function to 
+-- compare each month’s revenue against the previous month and calculate month-over-month change.)
+-- (A CTE (Common Table Expression) is like:a temporary table created only for this query)
+-- (LAG() is a window function that lets you look at a value from a previous row without using a self-join.)
+ WITH monthly_revenue AS (
+ SELECT 
+ YEAR(o.order_date) AS order_year,
+MONTH(o.order_date) AS order_month,
+ROUND(
+SUM(od.unit_price * od.quantity * (1 - od.discount)), 2) AS total_revenue
+FROM orders o
+JOIN order_details od
+ON o.id = od.order_id
+GROUP BY 
+YEAR(o.order_date),
+MONTH(o.order_date)
+SELECT 
+ order_year,
+ order_month,
+ total_revenue,
+ ROUND(
+ total_revenue - LAG(total_revenue, 1)
+ OVER (ORDER BY order_year, order_month),
+ 2
+AS revenue_change
+FROM monthly_revenue
+ORDER BY order_year, order_month;
+(“This query calculates monthly revenue and shows how each month compares to the previous month.”) 
