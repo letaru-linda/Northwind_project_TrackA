@@ -217,5 +217,23 @@ JOIN
     suppliers s ON p.supplier_ids = s.id
 WHERE 
     s.country_region = 'Germany';
+  -- Q23. For each category, show the most expensive product (name and price). 
+  SELECT 
+    p1.category, 
+    p1.product_name, 
+    p1.list_price AS max_price
+FROM 
+    products p1
+INNER JOIN (
+    SELECT 
+        category, 
+        MAX(list_price) AS max_price
+    FROM 
+        products
+    GROUP BY 
+        category
+) p2 ON p1.category = p2.category AND p1.list_price = p2.max_price
+ORDER BY 
+    p1.category;
 
 
