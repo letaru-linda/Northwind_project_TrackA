@@ -180,7 +180,7 @@ GROUP BY
 ORDER BY 
     total_value DESC
 LIMIT 10;
--- Q20. Which customers have NEVER placed an order? (This reveals at-risk or churned 
+-- Q20. Which customers have NEVER placed an order? (This reveals at-risk or churned accounts)
 SELECT 
     c.id, 
     c.company
@@ -190,5 +190,19 @@ LEFT JOIN
     orders o ON c.id = o.customer_id
 WHERE 
     o.id IS NULL;
-
+-- Q21. Calculate the average number of days between order date and shipped date, per 
+-- employee. Who ships the fastest
+SELECT 
+    CONCAT(e.first_name, ' ', e.last_name) AS employee_name,
+    AVG(DATEDIFF(o.shipped_date, o.order_date)) AS avg_days_to_ship
+FROM 
+    employees e
+JOIN 
+    orders o ON e.id = o.employee_id
+WHERE 
+    o.shipped_date IS NOT NULL
+GROUP BY 
+    e.id, e.first_name, e.last_name
+ORDER BY 
+    avg_days_to_ship;
 
