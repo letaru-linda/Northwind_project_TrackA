@@ -53,4 +53,5 @@ year(order_date) AS order_year,
 	  count(id) AS order_count
  from orders
 group by order_year
+-- Qn 10. What is the total revenue generated per product category?
 
