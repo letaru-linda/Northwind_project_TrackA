@@ -577,3 +577,23 @@ WHERE product_rank <= 3
 ORDER BY 
  country_region,
  product_rank;
+--  Q38. Identify products that have not been ordered in the last 12 months of the dataset. These are slow moving items.
+WITH latest_date AS (
+
+ SELECT 
+ MAX(order_date) AS max_order_date
+FROM orders
+ )
+
+SELECT 
+p.id AS product_id,
+ p.product_name
+FROM products p
+WHERE p.id NOT IN (
+SELECT DISTINCT od.product_id
+ FROM order_details od
+ JOIN orders o
+ ON od.order_id = o.id
+ CROSS JOIN latest_date ld
+WHERE o.order_date >= DATE_SUB(ld.max_order_date, INTERVAL 12 MONTH) )
+ORDER BY p.product_name;
