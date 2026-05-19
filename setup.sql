@@ -511,3 +511,31 @@ e.last_name,
 s.company,
 o.order_date,
 o.shipped_date;
+-- Q36. Write a stored procedure called get_customer_report that accepts a customer_id and returns their: total orders,total revenue,average order value and date of last order.
+DELIMITER $$
+ CREATE PROCEDURE get_customer_report(IN p_customer_id INT)
+
+ BEGIN
+
+SELECT 
+ o.customer_id,
+
+COUNT(DISTINCT o.id) AS total_orders,
+
+ ROUND(
+     SUM(od.unit_price * od.quantity * (1 - od.discount)),
+        2
+  ) AS total_revenue,
+
+  ROUND(
+   SUM(od.unit_price * od.quantity * (1 - od.discount))
+  / COUNT(DISTINCT o.id),
+    2
+  ) AS average_order_value,
+
+ MAX(o.order_date) AS last_order_date
+ FROM orders o
+JOIN order_details od   ON o.id = od.order_id
+WHERE o.customer_id = p_customer_id
+GROUP BY o.customer_id; END $$
+DELIMITER ;
