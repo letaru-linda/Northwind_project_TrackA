@@ -70,4 +70,17 @@ JOIN shippers s
 ON o.shipper_id = s.id
 GROUP BY s.company
 ORDER BY order_count DESC;
+--  Q12.List all products that are currently discontinued. How many are there? 
+SELECT * FROM products
+SELECT 
+product_name,
+category,
+list_price
+FROM products
+WHERE discontinued = 0;
+SELECT 
+COUNT(*) AS discontinued_count
+FROM products
+WHERE discontinued = 0;
+
 
