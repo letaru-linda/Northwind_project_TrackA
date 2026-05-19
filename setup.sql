@@ -687,3 +687,90 @@ JOIN products p
  s.id,
  s.company
  ORDER BY total_revenue_generated DESC;
+--  Q42. Using a CTE chain (two or more CTEs), identify which sales territory generated the most revenue and which employee in that territory contributed the most.
+WITH territory_revenue AS (
+
+    -- Total revenue per territory
+
+    SELECT 
+        e.country_region AS sales_territory,
+
+        ROUND(
+            SUM(od.unit_price * od.quantity * (1 - od.discount)),
+            2
+        ) AS territory_total_revenue
+
+    FROM employees e
+
+    JOIN orders o
+        ON e.id = o.employee_id
+
+    JOIN order_details od
+        ON o.id = od.order_id
+
+    GROUP BY e.country_region
+),
+
+employee_territory_revenue AS (
+
+    -- Revenue per employee inside each territory
+
+    SELECT 
+        e.country_region AS sales_territory,
+
+        CONCAT(e.first_name, ' ', e.last_name) AS employee_name,
+
+        ROUND(
+            SUM(od.unit_price * od.quantity * (1 - od.discount)),
+            2
+        ) AS employee_revenue
+
+    FROM employees e
+
+    JOIN orders o
+        ON e.id = o.employee_id
+
+    JOIN order_details od
+        ON o.id = od.order_id
+
+    GROUP BY 
+        e.country_region,
+        e.first_name,
+        e.last_name
+),
+
+ranked_employees AS (
+
+    -- Rank employees within each territory
+
+    SELECT 
+        sales_territory,
+        employee_name,
+        employee_revenue,
+
+        RANK() OVER (
+            PARTITION BY sales_territory
+            ORDER BY employee_revenue DESC
+        ) AS employee_rank
+
+    FROM employee_territory_revenue
+)
+
+SELECT 
+    tr.sales_territory,
+
+    tr.territory_total_revenue,
+
+    re.employee_name,
+
+    re.employee_revenue
+
+FROM territory_revenue tr
+
+JOIN ranked_employees re
+    ON tr.sales_territory = re.sales_territory
+
+WHERE re.employee_rank = 1
+
+ORDER BY tr.territory_total_revenue DESC
+LIMIT 1;
