@@ -97,5 +97,19 @@ GROUP BY
     c.id, c.company
 ORDER BY 
     total_revenue DESC;
+--     Q14. Which orders were placed in 1997? Show order_id, customer company name, and 
+-- order date.
+SELECT 
+    o.id AS order_id, 
+    c.company AS customer_company_name, 
+    o.order_date
+FROM 
+    orders o
+JOIN 
+    customers c ON o.customer_id = c.id
+WHERE 
+    o.order_date >= '1997-01-01' AND o.order_date <= '1997-12-31'
+ORDER BY 
+    o.order_date;
 
 
