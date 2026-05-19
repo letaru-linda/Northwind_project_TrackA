@@ -111,5 +111,20 @@ WHERE
     o.order_date >= '1997-01-01' AND o.order_date <= '1997-12-31'
 ORDER BY 
     o.order_date;
+--     Q15. Which employees have processed more than 80 orders? Show full name and order 
+-- count.
+SELECT 
+    CONCAT(e.first_name, ' ', e.last_name) AS full_name, 
+    COUNT(o.id) AS order_count
+FROM 
+    employees e
+JOIN 
+    orders o ON e.id = o.employee_id
+GROUP BY 
+    e.id, e.first_name, e.last_name
+HAVING 
+    order_count > 80
+ORDER BY 
+    order_count DESC;
 
 
