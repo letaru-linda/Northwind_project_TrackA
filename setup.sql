@@ -641,3 +641,24 @@ FROM quarterly_revenue
  ORDER BY 
  order_year,
  order_quarter;
+--  Q40. Detect potentially fraudulent orders: orders where the same customer placed 3 or more orders within a single 7 day window.
+
+SELECT 
+ o1.customer_id,
+ o1.id AS base_order_id,
+ DATE(o1.order_date) AS base_order_date,
+COUNT(o2.id) AS orders_in_7_days
+ FROM orders o1
+ JOIN orders o2
+ ON o1.customer_id = o2.customer_id
+ AND o2.order_date BETWEEN 
+ o1.order_date
+ AND DATE_ADD(o1.order_date, INTERVAL 7 DAY)
+ GROUP BY 
+ o1.customer_id,
+ o1.id,
+ o1.order_date
+ HAVING COUNT(o2.id) >= 3
+ ORDER BY 
+ orders_in_7_days DESC;
+    
