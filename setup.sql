@@ -774,3 +774,34 @@ WHERE re.employee_rank = 1
 
 ORDER BY tr.territory_total_revenue DESC
 LIMIT 1;
+-- TIER 4 — Business Reporting  (Q43–50)
+-- Q43. Build the monthly sales report: for each month show total orders, total revenue, 
+-- average order value, and number of unique customers. Identify the single best-performing 
+-- month.
+--  I joined the orders and order_details tables using order_id, grouped the data by year and month using 
+-- GROUP BY, then used aggregate functions  to calculate total orders, total revenue, average order value, and unique customers. 
+-- Results are sorted from the highest revenue month to the lowest revenue month to quickly identify peak sales periods.
+SELECT
+    YEAR(o.order_date) AS order_year,
+    MONTH(o.order_date) AS order_month,
+
+    COUNT(DISTINCT o.id) AS total_orders,
+
+    ROUND(SUM(od.quantity * od.unit_price), 2) AS total_revenue,
+
+    ROUND(
+        SUM(od.quantity * od.unit_price) 
+        / COUNT(DISTINCT o.id),
+    2) AS average_order_value,
+
+    COUNT(DISTINCT o.customer_id) AS unique_customers
+
+FROM orders o
+JOIN order_details od
+    ON o.id = od.order_id
+
+GROUP BY 
+    YEAR(o.order_date),
+    MONTH(o.order_date)
+
+ORDER BY total_revenue DESC;
