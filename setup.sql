@@ -988,7 +988,7 @@ FROM employee_metrics;
 -- together in the same order. Show the product pair and how many times they co-occur.
 -- (I performed a self-join on the order details table to match products within the same order, 
 -- avoided duplicates using a product ID condition, and 
--- counted how often each product pair co-occurs.)
+-- counted how often each product pair co-occurs)
 SELECT 
 od1.product_id AS product_1,
 od2.product_id AS product_2,
