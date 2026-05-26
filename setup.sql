@@ -899,3 +899,54 @@ JOIN order_details od
     ON o.id = od.order_id
 GROUP BY c.country_region
 ORDER BY total_revenue DESC;
+-- Q47. Which product categories show declining revenue year-over-year? Calculate revenue 
+-- per category per year and flag categories where the most recent year is lower than the 
+-- previous year
+-- 💡 Use LAG() within a CTE to compare years. Flag with CASE.
+
+-- (“The dataset only contained one year of revenue data for those categories, 
+-- so the LAG function had no previous year record available for comparison, reason for null previous year”)
+WITH category_revenue AS (
+    SELECT 
+        p.category,
+
+        YEAR(o.order_date) AS order_year,
+        ROUND(
+            SUM(od.unit_price * od.quantity * (1 - od.discount)),
+            2
+        ) AS total_revenue
+    FROM products p
+    JOIN order_details od
+        ON p.id = od.product_id
+    JOIN orders o
+        ON od.order_id = o.id
+    GROUP BY 
+        p.category,
+        YEAR(o.order_date)
+),
+
+revenue_comparison AS (
+    SELECT 
+        category,
+        order_year,
+        total_revenue,
+        LAG(total_revenue, 1) OVER (
+            PARTITION BY category
+            ORDER BY order_year
+        ) AS previous_year_revenue
+    FROM category_revenue
+)
+SELECT 
+    category,
+    order_year,
+    total_revenue,
+    previous_year_revenue,
+    CASE
+        WHEN total_revenue < previous_year_revenue
+            THEN 'Declining'
+        ELSE 'Growing/Stable'
+    END AS revenue_trend
+FROM revenue_comparison
+ORDER BY 
+    category,
+    order_year;
