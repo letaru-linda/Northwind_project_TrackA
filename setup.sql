@@ -984,3 +984,20 @@ WITH employee_metrics AS (
 SELECT *,
     RANK() OVER (ORDER BY total_revenue DESC) AS revenue_rank
 FROM employee_metrics;
+-- 49.Identify cross-selling opportunities: find pairs of products that are frequently ordered 
+-- together in the same order. Show the product pair and how many times they co-occur.
+-- (I performed a self-join on the order details table to match products within the same order, 
+-- avoided duplicates using a product ID condition, and 
+-- counted how often each product pair co-occurs.)
+SELECT 
+od1.product_id AS product_1,
+od2.product_id AS product_2,
+COUNT(*) AS times_ordered_together
+FROM order_details od1
+JOIN order_details od2
+    ON od1.order_id = od2.order_id
+    AND od1.product_id < od2.product_id
+GROUP BY 
+    od1.product_id,
+    od2.product_id
+ORDER BY times_ordered_together DESC;
