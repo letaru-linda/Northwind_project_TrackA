@@ -1001,3 +1001,114 @@ GROUP BY
     od1.product_id,
     od2.product_id
 ORDER BY times_ordered_together DESC;
+-- Q50. CEO Summary Report — Produce a single result set of 8 key business metrics in one 
+-- query using UNION ALL: (1) Total Revenue, (2) Total Orders, (3) Best Selling Product, (4) 
+-- Top Customer by Revenue, (5) Top Employee by Revenue, (6) Average Order Value, (7) 
+-- On-Time Delivery Rate %, (8) Total Customers. 
+-- 8 single-row subqueries joined with UNION ALL. Two columns: metric_name, metric_value.
+
+-- (This query builds a CEO-level summary dashboard
+-- It combines 8 key business metrics into one result using UNION ALL.
+-- Each row is a separate KPI (Key Performance Indicator).)
+SELECT 
+    'Total Revenue' AS metric_name,
+    ROUND(
+        SUM(od.unit_price * od.quantity * (1 - od.discount)),
+        2
+    ) AS metric_value
+
+FROM order_details od
+
+UNION ALL
+
+SELECT 
+    'Total Orders',
+    COUNT(DISTINCT id)
+FROM orders
+
+UNION ALL
+SELECT *
+FROM (
+
+    SELECT 
+        'Best Selling Product' AS metric_name,
+        p.product_name AS metric_value
+    FROM products p
+    JOIN order_details od
+        ON p.id = od.product_id
+    GROUP BY p.product_name
+    ORDER BY SUM(od.quantity) DESC
+    LIMIT 1
+) AS best_selling_product
+
+UNION ALL
+
+SELECT *
+FROM (
+    SELECT 
+        'Top Customer by Revenue' AS metric_name,
+        c.company AS metric_value
+    FROM customers c
+    JOIN orders o
+        ON c.id = o.customer_id
+    JOIN order_details od
+        ON o.id = od.order_id
+    GROUP BY c.company
+    ORDER BY 
+        SUM(od.unit_price * od.quantity * (1 - od.discount)) DESC
+    LIMIT 1
+) AS top_customer
+UNION ALL
+
+SELECT *
+FROM (
+
+    SELECT 
+        'Top Employee by Revenue' AS metric_name,
+        CONCAT(e.first_name, ' ', e.last_name) AS metric_value
+    FROM employees e
+    JOIN orders o
+        ON e.id = o.employee_id
+    JOIN order_details od
+        ON o.id = od.order_id
+    GROUP BY 
+        e.first_name,
+        e.last_name
+    ORDER BY 
+        SUM(od.unit_price * od.quantity * (1 - od.discount)) DESC
+    LIMIT 1
+) AS top_employee
+UNION ALL
+
+SELECT 
+    'Average Order Value',
+    ROUND(
+        SUM(od.unit_price * od.quantity * (1 - od.discount))
+        / COUNT(DISTINCT o.id),
+        2
+    )
+FROM orders o
+JOIN order_details od
+    ON o.id = od.order_id
+UNION ALL
+SELECT 
+    'On-Time Delivery Rate %',
+    ROUND(
+        (
+            SUM(
+                CASE
+                    WHEN shipped_date <= DATE_ADD(order_date, INTERVAL 3 DAY)
+                    THEN 1
+                    ELSE 0
+                END
+            ) * 100.0
+        ) / COUNT(*),
+        2
+    )
+
+FROM orders
+UNION ALL
+SELECT 
+    'Total Customers',
+    COUNT(*)
+FROM customers;
