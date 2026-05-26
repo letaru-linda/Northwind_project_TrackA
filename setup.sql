@@ -839,3 +839,63 @@ WHERE discontinued = 0
 ORDER BY reorder_level ASC;
 
 DESCRIBE products;
+-- Q45. Segment customers into three groups by order frequency: Loyal (6+ orders), Regular 
+-- (3–5 orders), Occasional (1–2 orders). Show how much total revenue each segment 
+-- generate
+-- ( i Counts how many orders each customer placed
+-- Segments customers into groups
+-- Calculates how much revenue each group generated)
+ WITH customer_orders AS (
+    SELECT 
+       o.customer_id,
+     COUNT(DISTINCT o.id) AS total_orders,
+ ROUND ( SUM(od.unit_price * od.quantity * (1 - od.discount)),2) AS total_revenue
+    FROM orders o
+   JOIN order_details od
+      ON o.id = od.order_id
+    GROUP BY o.customer_id
+),
+customer_segments AS (
+    SELECT 
+        customer_id,
+        total_orders,
+        total_revenue,
+        CASE
+            WHEN total_orders >= 6 THEN 'Loyal'
+            WHEN total_orders BETWEEN 3 AND 5 THEN 'Regular'
+            ELSE 'Occasional'
+        END AS customer_segment
+    FROM customer_orders
+    )
+SELECT 
+customer_segment,
+COUNT(customer_id) AS total_customers,
+ROUND (SUM(total_revenue),  2 ) AS segment_total_revenue
+FROM customer_segments
+GROUP BY customer_segment
+ORDER BY segment_total_revenue DESC;
+-- Q46. Build a geographic revenue heatmap query: for each country, show total customers, 
+-- total orders, total revenue, and average order value. Sort by total revenue. 
+-- Build a geographic revenue heatmap query: for each country, 
+-- show total customers, total orders, total revenue, and average order value. Sort by total revenue.
+-- 💡 JOIN customers → orders → order_details. GROUP BY customers.country.
+
+-- (I creates a geographic revenue report For each country, WHICH shows total customers, total orders,total revenue ,average order value,
+-- the i join the customers → orders → order_details table to determine the country with the most revenue,
+--  although the dataset has just one region)
+SELECT 
+    c.country_region,
+    COUNT(DISTINCT c.id) AS total_customers,
+    COUNT(DISTINCT o.id) AS total_orders,
+    ROUND(
+        SUM(od.unit_price * od.quantity * (1 - od.discount)),2) AS total_revenue,
+    ROUND(
+        SUM(od.unit_price * od.quantity * (1 - od.discount))
+        / COUNT(DISTINCT o.id),2) AS average_order_value
+FROM customers c
+JOIN orders o
+    ON c.id = o.customer_id
+JOIN order_details od
+    ON o.id = od.order_id
+GROUP BY c.country_region
+ORDER BY total_revenue DESC;
