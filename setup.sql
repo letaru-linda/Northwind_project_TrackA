@@ -805,3 +805,37 @@ GROUP BY
     MONTH(o.order_date)
 
 ORDER BY total_revenue DESC;
+-- Q44. Produce a product reorder report: list all products where the units_in_stock is less than 
+-- the reorder_level AND the product is not discontinued. Flag urgency as 'Critical' (stock = 0), 
+-- 'Low' (stock < reorder), or 'OK'. 
+--  CASE on units_in_stock vs reorder_level. Filter discontinued = 0. (No value output, rechecked)
+
+-- ( Dataset doesnt contain unit_in_stock, that is real inventory quantities, 
+-- so I adapted the reorder analysis using reorder thresholds and target stock levels instead.)
+
+SELECT 
+    id AS product_id,
+
+    product_name,
+
+    reorder_level,
+
+    target_level,
+
+    minimum_reorder_quantity,
+
+    CASE
+        WHEN reorder_level = 0 THEN 'Critical'
+
+        WHEN reorder_level < target_level THEN 'Low'
+
+        ELSE 'OK'
+    END AS urgency_status
+
+FROM products
+
+WHERE discontinued = 0
+
+ORDER BY reorder_level ASC;
+
+DESCRIBE products;
