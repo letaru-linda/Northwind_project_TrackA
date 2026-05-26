@@ -950,3 +950,37 @@ FROM revenue_comparison
 ORDER BY 
     category,
     order_year;
+    
+-- 48.Compute the Employee Performance Dashboard in one query: employee name, total 
+-- orders processed, total revenue managed, average order value, on-time delivery rate, and 
+-- revenue rank among all employees. 
+--  Combine multiple aggregates with a RANK() window function.
+
+-- (I aggregated employee-level sales data, 
+-- calculated performance metrics including on-time delivery rate, and used a 
+-- rank window function to rank employees by total revenue.)
+WITH employee_metrics AS (
+    SELECT 
+        e.id AS employee_id,
+        CONCAT(e.first_name, ' ', e.last_name) AS employee_name,
+        COUNT(DISTINCT o.id) AS total_orders,
+        ROUND(SUM(od.quantity * od.unit_price *( 1- od.discount)),2 )AS total_revenue,
+        ROUND (SUM(od.quantity * od.unit_price *(1- od.discount)),2 / COUNT(DISTINCT o.id)) AS avg_order_value,
+
+        SUM(
+            CASE 
+                WHEN o.shipped_date <= DATE_ADD(o.order_date, INTERVAL 3 DAY)
+                THEN 1 
+                ELSE 0 
+            END
+        ) * 1.0 / COUNT(DISTINCT o.id) AS on_time_rate
+
+    FROM employees e
+    JOIN orders o ON e.id = o.employee_id
+    JOIN order_details od ON o.id = od.order_id
+    GROUP BY e.id, employee_name
+)
+
+SELECT *,
+    RANK() OVER (ORDER BY total_revenue DESC) AS revenue_rank
+FROM employee_metrics;
